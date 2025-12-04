@@ -25,7 +25,7 @@ function App() {
           direction: "rtl",
         }}
       >
-        <todoContext.Provider value={[todos , setTodos]}>
+        <todoContext.Provider value={[todos, setTodos]}>
           <TodoList />
         </todoContext.Provider>
       </div>

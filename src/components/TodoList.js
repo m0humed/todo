@@ -70,7 +70,7 @@ export default function TodoList() {
 
           {/* FILTER BUTTONS */}
           <ToggleButtonGroup
-            style={{ direction: "ltr", marginTop: "30px" }}
+            style={{ direction: "rtl", marginTop: "30px" }}
             // value={alignment}
             exclusive
             // onChange={handleAlignment}

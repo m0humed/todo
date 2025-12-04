@@ -20,10 +20,12 @@ import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import IconButton from "@mui/material/IconButton";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import { Button  } from "@mui/material";
+import {  Button, TextField } from "@mui/material";
 
 export default function Todo({ todo }) {
   const [todos, setTodos] = useContext(todoContext);
+  const [valuableTodo, setValuableTodo] = useState(todo);
+
   function completedUpdate(taskId) {
     let newTodos = todos.map((t) => {
       if (t.id === taskId) {
@@ -39,19 +41,35 @@ export default function Todo({ todo }) {
   //   setTodos([...filteredTodos]);
   // }
 
-  // Dialog
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
+  // Delete
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const handleDeleteOpen = () => {
+    setOpenDeleteDialog(true);
   };
-
-  const handleClose = (state = false) => {
+  const handleDeleteClose = (state = false) => {
     if (state) {
-      let filteredTodos = todos.filter((t) => t.id !== todo.id );
+      let filteredTodos = todos.filter((t) => t.id !== todo.id);
       setTodos([...filteredTodos]);
     }
-    setOpen(false);
+    setOpenDeleteDialog(false);
+  };
+
+  // Edit
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleEditOpen = () => {
+    setOpenEditDialog(true);
+  };
+
+  const handleEditClose = (isUpdated) => {
+    if (isUpdated) {
+      let updatedTodos = todos.map((t) =>
+        t.id === todo.id ? valuableTodo : t
+      );
+      setTodos(updatedTodos);
+    }
+
+    setOpenEditDialog(false);
   };
 
   return (
@@ -87,7 +105,7 @@ export default function Todo({ todo }) {
               {/* Complete Task */}
               <IconButton
                 className="iconButton"
-                aria-label="delete"
+                aria-label="Complete"
                 style={{
                   color: todo.isCompleted ? "white" : "#8bc34a",
                   background: todo.isCompleted ? "#8bc34a" : "white",
@@ -101,17 +119,21 @@ export default function Todo({ todo }) {
               </IconButton>
               {/* Complete Task */}
 
+              {/* Edit Task */}
               <IconButton
                 className="iconButton"
-                aria-label="delete"
+                aria-label="Edit"
                 style={{
                   color: "#1769aa",
                   background: "white",
                   border: "solid #1769aa 3px",
                 }}
+                onClick={handleEditOpen}
               >
                 <ModeEditOutlineOutlinedIcon />
               </IconButton>
+              {/* Edit Task End */}
+
               {/* Delete Task */}
               <IconButton
                 className="iconButton"
@@ -121,7 +143,7 @@ export default function Todo({ todo }) {
                   background: "white",
                   border: "solid #b23c17 3px",
                 }}
-                onClick={handleClickOpen}
+                onClick={handleDeleteOpen}
               >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
@@ -131,11 +153,11 @@ export default function Todo({ todo }) {
           </Grid>
         </CardContent>
       </Card>
-      {/* Delete Model */}
+      {/* Delete Task */}
       <Dialog
-        open={open}
+        open={openDeleteDialog}
         onClose={() => {
-          handleClose(false);
+          handleDeleteClose(false);
         }}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -150,7 +172,7 @@ export default function Todo({ todo }) {
         <DialogActions>
           <Button
             onClick={() => {
-              handleClose(false);
+              handleDeleteClose(false);
             }}
             style={{ color: "red" }}
           >
@@ -158,7 +180,7 @@ export default function Todo({ todo }) {
           </Button>
           <Button
             onClick={() => {
-              handleClose(true);
+              handleDeleteClose(true);
             }}
             autoFocus
           >
@@ -166,7 +188,78 @@ export default function Todo({ todo }) {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Delete Model End */}
+      {/* Delete Task End */}
+
+      {/* Edit Task */}
+      <Dialog
+        style={{ direction: "rtl" }}
+        open={openEditDialog}
+        slotProps={{
+          paper: {
+            component: "form",
+            onSubmit: (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const formJson = Object.fromEntries(formData.entries());
+              const email = formJson.email;
+              console.log(email);
+              handleEditClose();
+            },
+          },
+        }}
+      >
+        <DialogTitle>تعديل المهمه</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            id="title"
+            name="title"
+            label="عنوان المهمه"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={valuableTodo.title}
+            onChange={(event) =>
+              setValuableTodo({ ...valuableTodo, title: event.target.value })
+            }
+          />
+          <TextField
+            autoFocus
+            margin="dense"
+            id="details"
+            name="details"
+            label="ملاحظه"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={valuableTodo.details}
+            onChange={(event) =>
+              setValuableTodo({ ...valuableTodo, details: event.target.value })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              handleEditClose(false);
+            }}
+            sx={{ color: "red" }}
+          >
+            الغاء
+          </Button>
+          <Button
+            onClick={() => {
+              handleEditClose(true);
+            }}
+          >
+            تعديل
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Edit Task End */}
+
     </>
   );
 }
