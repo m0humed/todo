@@ -42,9 +42,18 @@ export default function TodoList() {
   const [todos, setTodos] = useState([]);
   const [newTask, setNewTask] = useState("");
   const todosJsx = todos.map((t) => {
-
-    return <Todo key={t.id} title={t.title} details={t.details}  />;
+    return <Todo key={t.id} todo={t} completedUpdate={completedUpdate}  />;
   });
+
+  function completedUpdate(taskId){
+    let newTodos = todos.map(t => {
+      if(t.id === taskId){
+        t.isCompleted = !t.isCompleted
+      }
+      return t
+    })
+    setTodos([...newTodos])
+  }
 
   function handleAddNewTask() {
     if (newTask.length > 0) {
