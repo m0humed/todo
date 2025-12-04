@@ -10,7 +10,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
 
 // react hooks
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useContext } from "react";
 
 import { todoContext } from "../Contexts/TodosContext";
@@ -42,22 +42,35 @@ import { v4 as uuidv4 } from "uuid";
 // ];
 export default function TodoList() {
   const [todos, setTodos] = useContext(todoContext);
-
   const [newTask, setNewTask] = useState("");
   const todosJsx = todos.map((t) => {
-    return <Todo key={t.id} todo={t}  />;
+    return <Todo key={t.id} todo={t} />;
   });
-  
 
   function handleAddNewTask() {
     if (newTask.length > 0) {
-      setTodos([
+      let updatedlist = [
         ...todos,
         { id: uuidv4(), title: newTask, details: "", isCompleted: false },
-      ]);
+      ];
+      setTodos(updatedlist);
+      saveAtLocal(updatedlist);
       setNewTask("");
     }
   }
+
+  function saveAtLocal(lastVersion) {
+    const saved = JSON.stringify(lastVersion);
+    localStorage.setItem("todos", saved);
+  }
+
+  useEffect(() => {
+    const retrivedData = localStorage.getItem("todos");
+    if (retrivedData) {
+      const parsedData = JSON.parse(retrivedData);
+      setTodos(parsedData);
+    }
+  }, []);
 
   return (
     <Container maxWidth="sm">

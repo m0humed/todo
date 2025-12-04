@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
 // Context
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { todoContext } from "../Contexts/TodosContext";
 
@@ -20,7 +20,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import IconButton from "@mui/material/IconButton";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import {  Button, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
 export default function Todo({ todo }) {
   const [todos, setTodos] = useContext(todoContext);
@@ -35,6 +35,11 @@ export default function Todo({ todo }) {
     });
     setTodos([...newTodos]);
   }
+
+  useEffect(() => {
+    const saved = JSON.stringify(todos);
+    localStorage.setItem("todos", saved);
+  }, [todos]);
 
   // function handleDeleteTask() {
   //   let filteredTodos = todos.filter((t) => (t.id === todo.id ? null : t));
@@ -259,7 +264,6 @@ export default function Todo({ todo }) {
         </DialogActions>
       </Dialog>
       {/* Edit Task End */}
-
     </>
   );
 }
