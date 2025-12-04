@@ -1,8 +1,8 @@
-import logo from "./logo.svg";
 import "./App.css";
 import TodoList from "./components/TodoList";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import { todoContext } from "./Contexts/TodosContext";
+import { useState } from "react";
 const theme = createTheme({
   typography: {
     fontFamily: ["Alexandria"],
@@ -10,6 +10,8 @@ const theme = createTheme({
 });
 
 function App() {
+  const [todos, setTodos] = useState([]);
+
   return (
     <ThemeProvider theme={theme}>
       <div
@@ -23,7 +25,9 @@ function App() {
           direction: "rtl",
         }}
       >
-        <TodoList />
+        <todoContext.Provider value={[todos , setTodos]}>
+          <TodoList />
+        </todoContext.Provider>
       </div>
     </ThemeProvider>
   );

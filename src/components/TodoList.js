@@ -11,7 +11,9 @@ import TextField from "@mui/material/TextField";
 
 // react hooks
 import { useState } from "react";
+import { useContext } from "react";
 
+import { todoContext } from "../Contexts/TodosContext";
 // Components
 import Todo from "./Todo";
 
@@ -39,21 +41,13 @@ import { v4 as uuidv4 } from "uuid";
 //   },
 // ];
 export default function TodoList() {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useContext(todoContext);
+
   const [newTask, setNewTask] = useState("");
   const todosJsx = todos.map((t) => {
-    return <Todo key={t.id} todo={t} completedUpdate={completedUpdate}  />;
+    return <Todo key={t.id} todo={t}  />;
   });
-
-  function completedUpdate(taskId){
-    let newTodos = todos.map(t => {
-      if(t.id === taskId){
-        t.isCompleted = !t.isCompleted
-      }
-      return t
-    })
-    setTodos([...newTodos])
-  }
+  
 
   function handleAddNewTask() {
     if (newTask.length > 0) {
