@@ -43,9 +43,30 @@ import { v4 as uuidv4 } from "uuid";
 export default function TodoList() {
   const [todos, setTodos] = useContext(todoContext);
   const [newTask, setNewTask] = useState("");
-  const todosJsx = todos.map((t) => {
+  const [alignment, setAlignment] = useState("All");
+
+  const filterdTodos = todos.filter((t) => {
+    if (alignment === "All") {
+      return true;
+    }
+    if (alignment === "Completed" && t.isCompleted === true) {
+      return true;
+    }
+    if (alignment === "UnCompleted" && t.isCompleted === false) {
+      return true;
+    }
+    return false;
+  });
+
+  const todosJsx = filterdTodos.map((t) => {
     return <Todo key={t.id} todo={t} />;
   });
+
+  // Handle Toggle Buttons
+
+  const handleAlignment = (event, newAlignment) => {
+    setAlignment(newAlignment);
+  };
 
   function handleAddNewTask() {
     if (newTask.length > 0) {
@@ -83,15 +104,15 @@ export default function TodoList() {
 
           {/* FILTER BUTTONS */}
           <ToggleButtonGroup
-            style={{ direction: "rtl", marginTop: "30px" }}
-            // value={alignment}
+            style={{ direction: "ltr", marginTop: "30px" }}
+            value={alignment}
             exclusive
-            // onChange={handleAlignment}
+            onChange={handleAlignment}
             aria-label="text alignment"
           >
-            <ToggleButton value="right">غير المنجز</ToggleButton>
-            <ToggleButton value="center">المنجز</ToggleButton>
-            <ToggleButton value="left">الكل</ToggleButton>
+            <ToggleButton value="UnCompleted">غير المنجز</ToggleButton>
+            <ToggleButton value="Completed">المنجز</ToggleButton>
+            <ToggleButton value="All">الكل</ToggleButton>
           </ToggleButtonGroup>
           {/* ==== FILTER BUTTON ==== */}
 
