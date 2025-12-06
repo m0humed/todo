@@ -7,6 +7,11 @@ const theme = createTheme({
   typography: {
     fontFamily: ["Alexandria"],
   },
+  palette: {
+    primary: {
+      main: "#F875AA",
+    },
+  },
 });
 
 function App() {
@@ -21,7 +26,7 @@ function App() {
           justifyContent: "center",
           alignItems: "center",
           background: "#191b1f",
-          height: "100vh",
+          minHeight: "100vh",
           direction: "rtl",
         }}
       >

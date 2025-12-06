@@ -4,27 +4,21 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
 // Context
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect  } from "react";
 
 import { todoContext } from "../Contexts/TodosContext";
 
-// Modal
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 
 // ICONS
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import IconButton from "@mui/material/IconButton";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
-import { Button, TextField } from "@mui/material";
 
-export default function Todo({ todo }) {
+
+export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
   const [todos, setTodos] = useContext(todoContext);
-  const [valuableTodo, setValuableTodo] = useState(todo);
+
 
   function completedUpdate(taskId) {
     let newTodos = todos.map((t) => {
@@ -46,36 +40,7 @@ export default function Todo({ todo }) {
   //   setTodos([...filteredTodos]);
   // }
 
-  // Delete
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const handleDeleteOpen = () => {
-    setOpenDeleteDialog(true);
-  };
-  const handleDeleteClose = (state = false) => {
-    if (state) {
-      let filteredTodos = todos.filter((t) => t.id !== todo.id);
-      setTodos([...filteredTodos]);
-    }
-    setOpenDeleteDialog(false);
-  };
 
-  // Edit
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-
-  const handleEditOpen = () => {
-    setOpenEditDialog(true);
-  };
-
-  const handleEditClose = (isUpdated) => {
-    if (isUpdated) {
-      let updatedTodos = todos.map((t) =>
-        t.id === todo.id ? valuableTodo : t
-      );
-      setTodos(updatedTodos);
-    }
-
-    setOpenEditDialog(false);
-  };
 
   return (
     <>
@@ -85,13 +50,13 @@ export default function Todo({ todo }) {
           minWidth: 275,
           background: "#283593",
           color: "white",
-          marginTop: 5,
+          marginBottom: 5,
         }}
       >
         <CardContent>
           <Grid container spacing={2}>
             <Grid xs={8}>
-              <Typography variant="h5" sx={{ textAlign: "right" }}>
+              <Typography variant="h5" sx={{ textAlign: "right" , textDecoration:todo.isCompleted?"line-through":"none" }}>
                 {todo.title}
               </Typography>
 
@@ -133,7 +98,7 @@ export default function Todo({ todo }) {
                   background: "white",
                   border: "solid #1769aa 3px",
                 }}
-                onClick={handleEditOpen}
+                onClick={()=>handleEditOpen(todo)}
               >
                 <ModeEditOutlineOutlinedIcon />
               </IconButton>
@@ -148,7 +113,7 @@ export default function Todo({ todo }) {
                   background: "white",
                   border: "solid #b23c17 3px",
                 }}
-                onClick={handleDeleteOpen}
+                onClick={()=>handleDeleteOpen(todo.id)}
               >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>
@@ -158,112 +123,6 @@ export default function Todo({ todo }) {
           </Grid>
         </CardContent>
       </Card>
-      {/* Delete Task */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => {
-          handleDeleteClose(false);
-        }}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        style={{ direction: "rtl" }}
-      >
-        <DialogTitle id="alert-dialog-title">{"حذف مهمه"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            أذا قمت بحذف المهمه لن تستطيع استرجاعها مره اخري
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              handleDeleteClose(false);
-            }}
-            style={{ color: "red" }}
-          >
-            غير موافق
-          </Button>
-          <Button
-            onClick={() => {
-              handleDeleteClose(true);
-            }}
-            autoFocus
-          >
-            موافق
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Delete Task End */}
-
-      {/* Edit Task */}
-      <Dialog
-        style={{ direction: "rtl" }}
-        open={openEditDialog}
-        slotProps={{
-          paper: {
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-              const email = formJson.email;
-              console.log(email);
-              handleEditClose();
-            },
-          },
-        }}
-      >
-        <DialogTitle>تعديل المهمه</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="title"
-            name="title"
-            label="عنوان المهمه"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={valuableTodo.title}
-            onChange={(event) =>
-              setValuableTodo({ ...valuableTodo, title: event.target.value })
-            }
-          />
-          <TextField
-            autoFocus
-            margin="dense"
-            id="details"
-            name="details"
-            label="ملاحظه"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={valuableTodo.details}
-            onChange={(event) =>
-              setValuableTodo({ ...valuableTodo, details: event.target.value })
-            }
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              handleEditClose(false);
-            }}
-            sx={{ color: "red" }}
-          >
-            الغاء
-          </Button>
-          <Button
-            onClick={() => {
-              handleEditClose(true);
-            }}
-          >
-            تعديل
-          </Button>
-        </DialogActions>
-      </Dialog>
-      {/* Edit Task End */}
     </>
   );
 }
