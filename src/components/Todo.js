@@ -4,10 +4,10 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Unstable_Grid2";
 
 // Context
-import { useContext, useEffect  } from "react";
-
+import { useContext, useEffect } from "react";
+import { useToast } from "../Contexts/AlertContext";
 import { todoContext } from "../Contexts/TodosContext";
-
+import { MessageStatus } from "../Contexts/Eunms";
 
 // ICONS
 import CheckIcon from "@mui/icons-material/Check";
@@ -15,14 +15,18 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import IconButton from "@mui/material/IconButton";
 import ModeEditOutlineOutlinedIcon from "@mui/icons-material/ModeEditOutlineOutlined";
 
-
-export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
+export default function Todo({ todo, handleDeleteOpen, handleEditOpen }) {
   const [todos, setTodos] = useContext(todoContext);
-
+  const { showHideToast } = useToast();
 
   function completedUpdate(taskId) {
     let newTodos = todos.map((t) => {
       if (t.id === taskId) {
+        if (!t.isCompleted) {
+          showHideToast("تمت انهاء المهمه", MessageStatus.Completed);
+        } else {
+          showHideToast("المهمه قيد العمل", MessageStatus.unCompleted);
+        }
         t.isCompleted = !t.isCompleted;
       }
       return t;
@@ -40,8 +44,6 @@ export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
   //   setTodos([...filteredTodos]);
   // }
 
-
-
   return (
     <>
       <Card
@@ -56,7 +58,13 @@ export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
         <CardContent>
           <Grid container spacing={2}>
             <Grid xs={8}>
-              <Typography variant="h5" sx={{ textAlign: "right" , textDecoration:todo.isCompleted?"line-through":"none" }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  textAlign: "right",
+                  textDecoration: todo.isCompleted ? "line-through" : "none",
+                }}
+              >
                 {todo.title}
               </Typography>
 
@@ -98,7 +106,7 @@ export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
                   background: "white",
                   border: "solid #1769aa 3px",
                 }}
-                onClick={()=>handleEditOpen(todo)}
+                onClick={() => handleEditOpen(todo)}
               >
                 <ModeEditOutlineOutlinedIcon />
               </IconButton>
@@ -113,7 +121,7 @@ export default function Todo({ todo , handleDeleteOpen , handleEditOpen }) {
                   background: "white",
                   border: "solid #b23c17 3px",
                 }}
-                onClick={()=>handleDeleteOpen(todo.id)}
+                onClick={() => handleDeleteOpen(todo.id)}
               >
                 <DeleteOutlineOutlinedIcon />
               </IconButton>

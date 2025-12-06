@@ -8,21 +8,20 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Grid from "@mui/material/Unstable_Grid2";
 import TextField from "@mui/material/TextField";
-
 // react hooks
 import { useEffect, useState, useContext, useMemo } from "react";
 
 import { todoContext } from "../Contexts/TodosContext";
+import { useToast } from "../Contexts/AlertContext";
+import { MessageStatus } from "../Contexts/Eunms";
 // Components
 import Todo from "./Todo";
-
 // Modal
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
 // OTHERS
 import { v4 as uuidv4 } from "uuid";
 import { Box } from "@mui/material";
@@ -31,9 +30,15 @@ export default function TodoList() {
   const [todos, setTodos] = useContext(todoContext);
   const [newTask, setNewTask] = useState("");
   const [alignment, setAlignment] = useState("All");
+  const { showHideToast } = useToast();
+
   // Todo called id
   const [currentDeletedTodo, setCurrentDeletedTodo] = useState(null);
-  const [valuableTodo, setValuableTodo] = useState({id:null , title:"" , isCompleted:false});
+  const [valuableTodo, setValuableTodo] = useState({
+    id: null,
+    title: "",
+    isCompleted: false,
+  });
 
   // Handle Toggle Buttons
 
@@ -50,6 +55,7 @@ export default function TodoList() {
       setTodos(updatedlist);
       saveAtLocal(updatedlist);
       setNewTask("");
+      showHideToast("تمت الاضافه بنجاح", MessageStatus.Add);
     }
   }
 
@@ -64,7 +70,7 @@ export default function TodoList() {
       const parsedData = JSON.parse(retrivedData);
       setTodos(parsedData);
     }
-  }, []);
+  }, [setTodos]);
 
   // Delete
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -78,30 +84,31 @@ export default function TodoList() {
     if (state) {
       let filteredTodos = todos.filter((t) => t.id !== currentDeletedTodo);
       setTodos([...filteredTodos]);
+      showHideToast("تمت حذف المهمه", MessageStatus.Delete);
     }
     setOpenDeleteDialog(false);
   };
 
+  // Edit
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
-    // Edit
-    const [openEditDialog, setOpenEditDialog] = useState(false);
-  
-    const handleEditOpen = (todo) => {
-      setValuableTodo(todo)
-      console.log("lfffffffffffffffffffffffff")
-      setOpenEditDialog(true);
-    };
-  
-    const handleEditClose = (isUpdated) => {
-      if (isUpdated) {
-        let updatedTodos = todos.map((t) =>
-          t.id === valuableTodo.id ? valuableTodo : t
-        );
-        setTodos(updatedTodos);
-      }
-  
-      setOpenEditDialog(false);
-    };
+  const handleEditOpen = (todo) => {
+    setValuableTodo(todo);
+    console.log("lfffffffffffffffffffffffff");
+    setOpenEditDialog(true);
+  };
+
+  const handleEditClose = (isUpdated) => {
+    if (isUpdated) {
+      let updatedTodos = todos.map((t) =>
+        t.id === valuableTodo.id ? valuableTodo : t
+      );
+      setTodos(updatedTodos);
+      showHideToast("تمته التعديل بنجاح", MessageStatus.Edit);
+    }
+
+    setOpenEditDialog(false);
+  };
 
   const filterdTodos = useMemo(() => {
     // console.log("UseMemo")
@@ -122,7 +129,14 @@ export default function TodoList() {
   const todosJsx = useMemo(() => {
     // console.log("kffffff")
     return filterdTodos.map((t) => {
-      return <Todo key={t.id} todo={t} handleDeleteOpen={handleDeleteOpen} handleEditOpen={handleEditOpen} />;
+      return (
+        <Todo
+          key={t.id}
+          todo={t}
+          handleDeleteOpen={handleDeleteOpen}
+          handleEditOpen={handleEditOpen}
+        />
+      );
     });
   }, [filterdTodos]);
   return (
